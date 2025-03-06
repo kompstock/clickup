@@ -102,7 +102,8 @@ try:
             # Grupowanie tagów i liczenie wystąpień
             tags_summary = df["tags"].value_counts().reset_index()
             tags_summary.columns = ["Tag", "Liczba egzemplarzy"]
-            st.dataframe(tags_summary, height=300)
+            # Wyświetlanie tabeli bez ograniczenia wysokości - cała od razu
+            st.dataframe(tags_summary)
 
 except pd.errors.ParserError as e:
     st.error(f"Błąd parsowania pliku CSV: {e}")
