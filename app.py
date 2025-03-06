@@ -95,6 +95,14 @@ try:
                 file_name="filtered_data.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
+        
+        # Dodatkowa tabela z tagami - domyślnie ukryta
+        st.write("### Podsumowanie tagów")
+        with st.expander("Pokaż/ukryj tabelę z tagami", expanded=False):
+            # Grupowanie tagów i liczenie wystąpień
+            tags_summary = df["tags"].value_counts().reset_index()
+            tags_summary.columns = ["Tag", "Liczba egzemplarzy"]
+            st.dataframe(tags_summary, height=300)
 
 except pd.errors.ParserError as e:
     st.error(f"Błąd parsowania pliku CSV: {e}")
