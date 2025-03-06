@@ -103,7 +103,7 @@ try:
             tags_summary = df["tags"].value_counts().reset_index()
             tags_summary.columns = ["Tag", "Liczba egzemplarzy"]
             # Wyświetlanie tabeli z wysokością wystarczającą na 100 pozycji
-            st.dataframe(tags_summary, height=2000)  # Wysokość 2000 pikseli dla ~100 wierszy
+            st.dataframe(tags_summary, height=1000)  # Wysokość 2000 pikseli dla ~100 wierszy
 
 except pd.errors.ParserError as e:
     st.error(f"Błąd parsowania pliku CSV: {e}")
