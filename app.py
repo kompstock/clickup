@@ -97,7 +97,7 @@ try:
             )
         
         # Dodatkowa tabela z tagami - domyślnie ukryta
-        st.write("### Podsumowanie tagów")
+        st.write("### Podsumowanie modeli")
         with st.expander("Pokaż/ukryj tabelę z tagami", expanded=False):
             # Grupowanie tagów i liczenie wystąpień
             tags_summary = df["tags"].value_counts().reset_index()
