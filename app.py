@@ -1,6 +1,5 @@
 import pandas as pd
 import streamlit as st
-from urllib.parse import urlencode  # Dodajemy do ręcznego tworzenia query string
 
 st.set_page_config(layout="wide")
 st.title("Magazyn z ClickUp - aktualizacja 10.03.2025 - wersja BETA")
@@ -102,17 +101,6 @@ try:
         st.write("### Przefiltrowane dane")
         st.dataframe(filtered_df, height=500)
         st.write(f"Liczba pokazywanych pozycji: {len(filtered_df)}")
-        
-        # Generowanie URL do udostępnienia
-        base_url = f"{st.get_option('browser.serverAddress')}:{st.get_option('server.port')}/"
-        query_string = urlencode(new_query_params, doseq=True)  # doseq=True dla list (np. destinations)
-        current_url = f"{base_url}?{query_string}"
-        
-        st.write("### Udostępnij widok")
-        st.code(current_url, language="text")  # Wyświetla link jako tekst do skopiowania
-        if st.button("Skopiuj link do schowka"):
-            st.write("Link skopiowany do schowka (skopiuj ręcznie, jeśli to nie działa).")
-            st.markdown(f"[Otwórz link]({current_url})")  # Klikalny link
         
         # Eksport do Excel
         excel_buffer = pd.ExcelWriter('filtered_data.xlsx', engine='xlsxwriter')
