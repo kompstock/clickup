@@ -16,59 +16,82 @@ try:
     else:
         st.sidebar.header("Filtry")
         
+        # Odczyt parametrów z URL (jeśli istnieją)
+        query_params = st.query_params.to_dict()
+        
+        # Filtr dla "tags"
         unique_tags = df["tags"].unique().tolist()
-        selected_tag = st.sidebar.selectbox("Wybierz tag", ["Wszystkie"] + unique_tags)
+        default_tag = query_params.get("tag", "Wszystkie")
+        selected_tag = st.sidebar.selectbox("Wybierz tag", ["Wszystkie"] + unique_tags, index=(["Wszystkie"] + unique_tags).index(default_tag) if default_tag in ["Wszystkie"] + unique_tags else 0)
         
+        # Filtr dla "Procesor (drop down)"
         unique_processors = df["Procesor (drop down)"].unique().tolist()
-        selected_processor = st.sidebar.selectbox("Wybierz procesor", ["Wszystkie"] + unique_processors)
+        default_processor = query_params.get("processor", "Wszystkie")
+        selected_processor = st.sidebar.selectbox("Wybierz procesor", ["Wszystkie"] + unique_processors, index=(["Wszystkie"] + unique_processors).index(default_processor) if default_processor in ["Wszystkie"] + unique_processors else 0)
         
+        # Filtr dla "Model Procesora (short text)"
         unique_processor_models = df["Model Procesora (short text)"].unique().tolist()
-        selected_processor_model = st.sidebar.selectbox("Wybierz model procesora", ["Wszystkie"] + unique_processor_models)
+        default_processor_model = query_params.get("processor_model", "Wszystkie")
+        selected_processor_model = st.sidebar.selectbox("Wybierz model procesora", ["Wszystkie"] + unique_processor_models, index=(["Wszystkie"] + unique_processor_models).index(default_processor_model) if default_processor_model in ["Wszystkie"] + unique_processor_models else 0)
         
+        # Filtr dla "Rozdzielczość (drop down)"
         unique_resolutions = df["Rozdzielczość (drop down)"].unique().tolist()
-        selected_resolution = st.sidebar.selectbox("Wybierz rozdzielczość", ["Wszystkie"] + unique_resolutions)
+        default_resolution = query_params.get("resolution", "Wszystkie")
+        selected_resolution = st.sidebar.selectbox("Wybierz rozdzielczość", ["Wszystkie"] + unique_resolutions, index=(["Wszystkie"] + unique_resolutions).index(default_resolution) if default_resolution in ["Wszystkie"] + unique_resolutions else 0)
         
+        # Filtr dla "Przeznaczenie (drop down)" z multiwyborem
         unique_destinations = df["Przeznaczenie (drop down)"].unique().tolist()
-        selected_destinations = st.sidebar.multiselect("Wybierz przeznaczenie", unique_destinations)
+        default_destinations = query_params.get("destinations", [])
+        if isinstance(default_destinations, str):  # Jeśli tylko jedna wartość, zamień na listę
+            default_destinations = [default_destinations]
+        selected_destinations = st.sidebar.multiselect("Wybierz przeznaczenie", unique_destinations, default=default_destinations)
         
+        # Filtr dla "Lists"
         unique_lists = df["Lists"].unique().tolist()
-        selected_list = st.sidebar.selectbox("Wybierz listę", ["Wszystkie"] + unique_lists)
+        default_list = query_params.get("list", "Wszystkie")
+        selected_list = st.sidebar.selectbox("Wybierz listę", ["Wszystkie"] + unique_lists, index=(["Wszystkie"] + unique_lists).index(default_list) if default_list in ["Wszystkie"] + unique_lists else 0)
         
+        # Aktualizacja parametrów URL po wybraniu filtrów
+        new_query_params = {
+            "tag": selected_tag,
+            "processor": selected_processor,
+            "processor_model": selected_processor_model,
+            "resolution": selected_resolution,
+            "destinations": selected_destinations,
+            "list": selected_list
+        }
+        st.query_params.from_dict(new_query_params)
+        
+        # Filtrowanie danych
         filtered_df = df.copy()
         
-        # Filtrowanie po "tags"
         if selected_tag != "Wszystkie":
             if pd.isna(selected_tag):
                 filtered_df = filtered_df[filtered_df["tags"].isna()]
             else:
                 filtered_df = filtered_df[filtered_df["tags"] == selected_tag]
                 
-        # Filtrowanie po "Procesor (drop down)"
         if selected_processor != "Wszystkie":
             if pd.isna(selected_processor):
                 filtered_df = filtered_df[filtered_df["Procesor (drop down)"].isna()]
             else:
                 filtered_df = filtered_df[filtered_df["Procesor (drop down)"] == selected_processor]
                 
-        # Filtrowanie po "Model Procesora (short text)"
         if selected_processor_model != "Wszystkie":
             if pd.isna(selected_processor_model):
                 filtered_df = filtered_df[filtered_df["Model Procesora (short text)"].isna()]
             else:
                 filtered_df = filtered_df[filtered_df["Model Procesora (short text)"] == selected_processor_model]
                 
-        # Filtrowanie po "Rozdzielczość (drop down)"
         if selected_resolution != "Wszystkie":
             if pd.isna(selected_resolution):
                 filtered_df = filtered_df[filtered_df["Rozdzielczość (drop down)"].isna()]
             else:
                 filtered_df = filtered_df[filtered_df["Rozdzielczość (drop down)"] == selected_resolution]
                 
-        # Filtrowanie po "Przeznaczenie (drop down)" z multiwyborem
         if selected_destinations:
             filtered_df = filtered_df[filtered_df["Przeznaczenie (drop down)"].isin(selected_destinations)]
             
-        # Filtrowanie po "Lists"
         if selected_list != "Wszystkie":
             if pd.isna(selected_list):
                 filtered_df = filtered_df[filtered_df["Lists"].isna()]
@@ -79,6 +102,16 @@ try:
         st.dataframe(filtered_df, height=500)
         st.write(f"Liczba pokazywanych pozycji: {len(filtered_df)}")
         
+        # Przycisk udostępniania
+        current_url = f"{st.get_option('browser.serverAddress')}:{st.get_option('server.port')}/?{st.query_params.to_query_string()}"
+        st.write("### Udostępnij widok")
+        st.code(current_url, language="text")  # Wyświetla link jako tekst do skopiowania
+        if st.button("Skopiuj link do schowka"):
+            st.write("Link skopiowany do schowka!")
+            st.write(f"Kliknij [tutaj]({current_url}), aby otworzyć stronę z wybranymi filtrami.")
+            # W Streamlit nie ma natywnej obsługi kopiowania do schowka, ale można użyć JS w przyszłości
+        
+        # Eksport do Excel
         excel_buffer = pd.ExcelWriter('filtered_data.xlsx', engine='xlsxwriter')
         filtered_df.to_excel(excel_buffer, index=False)
         excel_buffer.close()
