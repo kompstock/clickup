@@ -97,7 +97,7 @@ try:
             # Skonstruuj query string, aby wyświetlić użytkownikowi pełny URL
             query_string = urllib.parse.urlencode(new_query_params, doseq=True)
             base_url = st.request.host_url if hasattr(st, "request") and st.request.host_url else ""
-            full_url = base_url + "?" + query_string if base_url else "Skopiuj adres z paska przeglądarki."
+            full_url = base_url + "?" + query_string if base_url else "z paska przeglądarki."
             st.sidebar.success("Filtry zapisane!")
             st.sidebar.info(f"Skopiuj URL: {full_url}")
         
