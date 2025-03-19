@@ -20,24 +20,30 @@ try:
     else:
         st.sidebar.header("Filtry")
         
-        # Odczyt parametrów z URL (jeśli istnieją)
-        query_params = st.query_params.to_dict()
+        # Odczyt parametrów z URL (jeśli istnieją) z użyciem funkcji eksperymentalnych
+        query_params = st.experimental_get_query_params()
+        
+        # Dla parametrów pobieramy pierwszą wartość z listy lub ustawiamy wartość domyślną
+        default_tag = query_params.get("tag", ["Wszystkie"])[0]
+        default_processor = query_params.get("processor", ["Wszystkie"])[0]
+        default_processor_model = query_params.get("processor_model", ["Wszystkie"])[0]
+        default_resolution = query_params.get("resolution", ["Wszystkie"])[0]
+        default_destinations = query_params.get("destinations", [])
+        default_list = query_params.get("list", ["Wszystkie"])[0]
         
         # Filtr dla "tags"
         unique_tags = df["tags"].unique().tolist()
-        default_tag = query_params.get("tag", "Wszystkie")
         selected_tag = st.sidebar.selectbox("Wybierz tag", ["Wszystkie"] + unique_tags, 
                                               index=(["Wszystkie"] + unique_tags).index(default_tag) if default_tag in (["Wszystkie"] + unique_tags) else 0)
         
         # Filtr dla "Procesor (drop down)"
         unique_processors = df["Procesor (drop down)"].unique().tolist()
-        default_processor = query_params.get("processor", "Wszystkie")
         selected_processor = st.sidebar.selectbox("Wybierz procesor", ["Wszystkie"] + unique_processors, 
                                                    index=(["Wszystkie"] + unique_processors).index(default_processor) if default_processor in (["Wszystkie"] + unique_processors) else 0)
         
         # Filtr dla "Model Procesora (short text)"
         unique_processor_models = df["Model Procesora (short text)"].unique().tolist()
-        default_processor_model = query_params.get("processor_model", "Wszystkie")
+        # Normalizacja domyślnej wartości, jeśli nie jest "Wszystkie"
         if default_processor_model != "Wszystkie":
             default_processor_model = default_processor_model.lower().strip()
         selected_processor_model = st.sidebar.selectbox("Wybierz model procesora", ["Wszystkie"] + unique_processor_models, 
@@ -45,33 +51,27 @@ try:
         
         # Filtr dla "Rozdzielczość (drop down)"
         unique_resolutions = df["Rozdzielczość (drop down)"].unique().tolist()
-        default_resolution = query_params.get("resolution", "Wszystkie")
         selected_resolution = st.sidebar.selectbox("Wybierz rozdzielczość", ["Wszystkie"] + unique_resolutions, 
                                                     index=(["Wszystkie"] + unique_resolutions).index(default_resolution) if default_resolution in (["Wszystkie"] + unique_resolutions) else 0)
         
         # Filtr dla "Przeznaczenie (drop down)" z multiwyborem
-        unique_destinations = df["Przeznaczenie (drop down)"].unique().tolist()
-        default_destinations = query_params.get("destinations", [])
-        if isinstance(default_destinations, str):  # Jeśli tylko jedna wartość, zamień na listę
-            default_destinations = [default_destinations]
-        selected_destinations = st.sidebar.multiselect("Wybierz przeznaczenie", unique_destinations, default=default_destinations)
+        selected_destinations = st.sidebar.multiselect("Wybierz przeznaczenie", df["Przeznaczenie (drop down)"].unique().tolist(), default=default_destinations)
         
         # Filtr dla "Lists"
         unique_lists = df["Lists"].unique().tolist()
-        default_list = query_params.get("list", "Wszystkie")
         selected_list = st.sidebar.selectbox("Wybierz listę", ["Wszystkie"] + unique_lists, 
                                               index=(["Wszystkie"] + unique_lists).index(default_list) if default_list in (["Wszystkie"] + unique_lists) else 0)
         
         # Aktualizacja parametrów URL po wybraniu filtrów
         new_query_params = {
-            "tag": selected_tag,
-            "processor": selected_processor,
-            "processor_model": selected_processor_model,
-            "resolution": selected_resolution,
+            "tag": [selected_tag],
+            "processor": [selected_processor],
+            "processor_model": [selected_processor_model],
+            "resolution": [selected_resolution],
             "destinations": selected_destinations,
-            "list": selected_list
+            "list": [selected_list]
         }
-        st.query_params.from_dict(new_query_params)
+        st.experimental_set_query_params(**new_query_params)
         
         # Filtrowanie danych
         filtered_df = df.copy()
