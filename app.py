@@ -92,14 +92,14 @@ try:
         }
         
         # Dodajemy przycisk, który zapisze filtry i wyświetli informację z aktualnym URL
-        if st.sidebar.button("Zapisz filtry i udostępnij"):
+        if st.sidebar.button("Zapisz filtry aby udostępnić"):
             st.experimental_set_query_params(**new_query_params)
             # Skonstruuj query string, aby wyświetlić użytkownikowi pełny URL
             query_string = urllib.parse.urlencode(new_query_params, doseq=True)
             base_url = st.request.host_url if hasattr(st, "request") and st.request.host_url else ""
-            full_url = base_url + "?" + query_string if base_url else "z paska przeglądarki."
+            full_url = base_url + "?" + query_string if base_url else ""
             st.sidebar.success("Filtry zapisane!")
-            st.sidebar.info(f"Skopiuj URL: {full_url}")
+            st.sidebar.info(f"Skopiuj URL z paska przeglądarki. {full_url}")
         
         # Filtrowanie danych
         filtered_df = df.copy()
