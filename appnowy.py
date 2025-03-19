@@ -97,7 +97,7 @@ try:
         
         # Przycisk resetu filtrów – przekierowuje do podstawowego adresu, np. "https://www.komstock.streamlit.app"
         if st.sidebar.button("Resetuj filtry"):
-            reset_url = "https://komstock.streamli.app"
+            reset_url = "https://komstock.streamlit.app"
             st.markdown(f'<meta http-equiv="refresh" content="0; url={reset_url}">', unsafe_allow_html=True)
         
         # Filtrowanie danych
