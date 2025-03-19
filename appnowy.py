@@ -24,7 +24,7 @@ try:
         # Odczyt parametrów z URL (jeśli istnieją) z użyciem funkcji eksperymentalnych
         query_params = st.experimental_get_query_params()
         
-        # Pobieramy parametry lub ustawiamy wartości domyślne
+        # Dla parametrów pobieramy pierwszą wartość z listy lub ustawiamy wartość domyślną
         default_tag = query_params.get("tag", ["Wszystkie"])[0]
         default_processor = query_params.get("processor", ["Wszystkie"])[0]
         default_processor_model = query_params.get("processor_model", ["Wszystkie"])[0]
@@ -32,7 +32,7 @@ try:
         default_destinations = query_params.get("destinations", [])
         default_list = query_params.get("list", ["Wszystkie"])[0]
         
-        # Widgety filtrów
+        # Filtr dla "tags"
         unique_tags = df["tags"].unique().tolist()
         selected_tag = st.sidebar.selectbox(
             "Wybierz tag", 
@@ -40,6 +40,7 @@ try:
             index=(["Wszystkie"] + unique_tags).index(default_tag) if default_tag in (["Wszystkie"] + unique_tags) else 0
         )
         
+        # Filtr dla "Procesor (drop down)"
         unique_processors = df["Procesor (drop down)"].unique().tolist()
         selected_processor = st.sidebar.selectbox(
             "Wybierz procesor", 
@@ -47,6 +48,7 @@ try:
             index=(["Wszystkie"] + unique_processors).index(default_processor) if default_processor in (["Wszystkie"] + unique_processors) else 0
         )
         
+        # Filtr dla "Model Procesora (short text)"
         unique_processor_models = df["Model Procesora (short text)"].unique().tolist()
         if default_processor_model != "Wszystkie":
             default_processor_model = default_processor_model.lower().strip()
@@ -56,6 +58,7 @@ try:
             index=(["Wszystkie"] + unique_processor_models).index(default_processor_model) if default_processor_model in (["Wszystkie"] + unique_processor_models) else 0
         )
         
+        # Filtr dla "Rozdzielczość (drop down)"
         unique_resolutions = df["Rozdzielczość (drop down)"].unique().tolist()
         selected_resolution = st.sidebar.selectbox(
             "Wybierz rozdzielczość", 
@@ -63,12 +66,14 @@ try:
             index=(["Wszystkie"] + unique_resolutions).index(default_resolution) if default_resolution in (["Wszystkie"] + unique_resolutions) else 0
         )
         
+        # Filtr dla "Przeznaczenie (drop down)" z multiwyborem
         selected_destinations = st.sidebar.multiselect(
             "Wybierz przeznaczenie", 
             df["Przeznaczenie (drop down)"].unique().tolist(), 
             default=default_destinations
         )
         
+        # Filtr dla "Lists"
         unique_lists = df["Lists"].unique().tolist()
         selected_list = st.sidebar.selectbox(
             "Wybierz listę", 
@@ -86,19 +91,15 @@ try:
             "list": [selected_list]
         }
         
-        # Przycisk zapisu filtrów – ustawia query parameters i wyświetla URL
+        # Dodajemy przycisk, który zapisze filtry i wyświetli informację z aktualnym URL
         if st.sidebar.button("Zapisz filtry i udostępnij"):
             st.experimental_set_query_params(**new_query_params)
+            # Skonstruuj query string, aby wyświetlić użytkownikowi pełny URL
             query_string = urllib.parse.urlencode(new_query_params, doseq=True)
             base_url = st.request.host_url if hasattr(st, "request") and st.request.host_url else ""
-            full_url = base_url + "?" + query_string if base_url else "."
+            full_url = base_url + "?" + query_string if base_url else "z paska przeglądarki."
             st.sidebar.success("Filtry zapisane!")
-            st.sidebar.info(f"Skopiuj URLz paska przeglądarki {full_url}")
-        
-        # Przycisk resetu filtrów – przekierowuje do podstawowego adresu, np. "https://www.komstock.streamlit.app"
-        if st.sidebar.button("Resetuj filtry"):
-            reset_url = "https://komstock.streamlit.app"
-            st.markdown(f'<meta http-equiv="refresh" content="0; url={reset_url}">', unsafe_allow_html=True)
+            st.sidebar.info(f"Skopiuj URL: {full_url}")
         
         # Filtrowanie danych
         filtered_df = df.copy()
