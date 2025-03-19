@@ -11,6 +11,10 @@ try:
     df = pd.read_csv(file_path, sep=separator, encoding='utf-8', on_bad_lines='skip')
     st.write("Plik został wczytany poprawnie!")
     
+    # Normalizacja "in place" kolumny modelu procesora
+    if "Model Procesora (short text)" in df.columns:
+        df["Model Procesora (short text)"] = df["Model Procesora (short text)"].str.lower().str.strip()
+    
     if "tags" not in df.columns:
         st.error("Brak kolumny 'tags' w pliku CSV. Sprawdź plik.")
     else:
@@ -22,22 +26,28 @@ try:
         # Filtr dla "tags"
         unique_tags = df["tags"].unique().tolist()
         default_tag = query_params.get("tag", "Wszystkie")
-        selected_tag = st.sidebar.selectbox("Wybierz tag", ["Wszystkie"] + unique_tags, index=(["Wszystkie"] + unique_tags).index(default_tag) if default_tag in ["Wszystkie"] + unique_tags else 0)
+        selected_tag = st.sidebar.selectbox("Wybierz tag", ["Wszystkie"] + unique_tags, 
+                                              index=(["Wszystkie"] + unique_tags).index(default_tag) if default_tag in (["Wszystkie"] + unique_tags) else 0)
         
         # Filtr dla "Procesor (drop down)"
         unique_processors = df["Procesor (drop down)"].unique().tolist()
         default_processor = query_params.get("processor", "Wszystkie")
-        selected_processor = st.sidebar.selectbox("Wybierz procesor", ["Wszystkie"] + unique_processors, index=(["Wszystkie"] + unique_processors).index(default_processor) if default_processor in ["Wszystkie"] + unique_processors else 0)
+        selected_processor = st.sidebar.selectbox("Wybierz procesor", ["Wszystkie"] + unique_processors, 
+                                                   index=(["Wszystkie"] + unique_processors).index(default_processor) if default_processor in (["Wszystkie"] + unique_processors) else 0)
         
         # Filtr dla "Model Procesora (short text)"
         unique_processor_models = df["Model Procesora (short text)"].unique().tolist()
         default_processor_model = query_params.get("processor_model", "Wszystkie")
-        selected_processor_model = st.sidebar.selectbox("Wybierz model procesora", ["Wszystkie"] + unique_processor_models, index=(["Wszystkie"] + unique_processor_models).index(default_processor_model) if default_processor_model in ["Wszystkie"] + unique_processor_models else 0)
+        if default_processor_model != "Wszystkie":
+            default_processor_model = default_processor_model.lower().strip()
+        selected_processor_model = st.sidebar.selectbox("Wybierz model procesora", ["Wszystkie"] + unique_processor_models, 
+                                                         index=(["Wszystkie"] + unique_processor_models).index(default_processor_model) if default_processor_model in (["Wszystkie"] + unique_processor_models) else 0)
         
         # Filtr dla "Rozdzielczość (drop down)"
         unique_resolutions = df["Rozdzielczość (drop down)"].unique().tolist()
         default_resolution = query_params.get("resolution", "Wszystkie")
-        selected_resolution = st.sidebar.selectbox("Wybierz rozdzielczość", ["Wszystkie"] + unique_resolutions, index=(["Wszystkie"] + unique_resolutions).index(default_resolution) if default_resolution in ["Wszystkie"] + unique_resolutions else 0)
+        selected_resolution = st.sidebar.selectbox("Wybierz rozdzielczość", ["Wszystkie"] + unique_resolutions, 
+                                                    index=(["Wszystkie"] + unique_resolutions).index(default_resolution) if default_resolution in (["Wszystkie"] + unique_resolutions) else 0)
         
         # Filtr dla "Przeznaczenie (drop down)" z multiwyborem
         unique_destinations = df["Przeznaczenie (drop down)"].unique().tolist()
@@ -49,7 +59,8 @@ try:
         # Filtr dla "Lists"
         unique_lists = df["Lists"].unique().tolist()
         default_list = query_params.get("list", "Wszystkie")
-        selected_list = st.sidebar.selectbox("Wybierz listę", ["Wszystkie"] + unique_lists, index=(["Wszystkie"] + unique_lists).index(default_list) if default_list in ["Wszystkie"] + unique_lists else 0)
+        selected_list = st.sidebar.selectbox("Wybierz listę", ["Wszystkie"] + unique_lists, 
+                                              index=(["Wszystkie"] + unique_lists).index(default_list) if default_list in (["Wszystkie"] + unique_lists) else 0)
         
         # Aktualizacja parametrów URL po wybraniu filtrów
         new_query_params = {
