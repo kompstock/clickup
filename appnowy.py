@@ -91,11 +91,11 @@ try:
             st.experimental_set_query_params(**new_query_params)
             query_string = urllib.parse.urlencode(new_query_params, doseq=True)
             base_url = st.request.host_url if hasattr(st, "request") and st.request.host_url else ""
-            full_url = base_url + "?" + query_string if base_url else "Skopiuj adres z paska przeglądarki."
+            full_url = base_url + "?" + query_string if base_url else "."
             st.sidebar.success("Filtry zapisane!")
-            st.sidebar.info(f"Skopiuj URL: {full_url}")
+            st.sidebar.info(f"Skopiuj URLz paska przeglądarki {full_url}")
         
-        # Przycisk resetu filtrów – przekierowuje do podstawowego adresu, np. "https://komstock.streamlit.app"
+        # Przycisk resetu filtrów – przekierowuje do podstawowego adresu, np. "https://www.komstock.streamlit.app"
         if st.sidebar.button("Resetuj filtry"):
             reset_url = "https://komstock.streamli.app"
             st.markdown(f'<meta http-equiv="refresh" content="0; url={reset_url}">', unsafe_allow_html=True)
