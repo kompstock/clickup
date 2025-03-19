@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 
 st.set_page_config(layout="wide")
-st.title("Magazyn z ClickUp - aktualizacja 14.03.2025 - wersja BETA")
+st.title("Magazyn z ClickUp - aktualizacja 19.03.2025 - wersja BETA")
 
 file_path = "nazwa_pliku.csv"
 separator = ','
