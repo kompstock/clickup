@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import urllib.parse
 
 st.set_page_config(layout="wide")
 st.title("Magazyn z ClickUp - aktualizacja 19.03.2025 - wersja BETA")
@@ -90,9 +91,15 @@ try:
             "list": [selected_list]
         }
         
-        # Aktualizacja query parameters tylko wtedy, gdy wartości uległy zmianie
-        if new_query_params != query_params:
+        # Dodajemy przycisk, który zapisze filtry i wyświetli informację z aktualnym URL
+        if st.sidebar.button("Zapisz filtry"):
             st.experimental_set_query_params(**new_query_params)
+            # Skonstruuj query string, aby wyświetlić użytkownikowi pełny URL
+            query_string = urllib.parse.urlencode(new_query_params, doseq=True)
+            base_url = st.request.host_url if hasattr(st, "request") and st.request.host_url else ""
+            full_url = base_url + "?" + query_string if base_url else "URL został zaktualizowany - skopiuj adres z paska przeglądarki."
+            st.sidebar.success("Filtry zapisane!")
+            st.sidebar.info(f"Skopiuj URL: {full_url}")
         
         # Filtrowanie danych
         filtered_df = df.copy()
@@ -154,4 +161,12 @@ try:
             st.dataframe(tags_summary, height=500)
 
 except pd.errors.ParserError as e:
-    st
+    st.error(f"Błąd parsowania pliku CSV: {e}")
+except UnicodeDecodeError as e:
+    st.error(f"Błąd kodowania: {e}")
+except KeyError as e:
+    st.error(f"Brak wymaganej kolumny w pliku CSV: {e}")
+except FileNotFoundError:
+    st.error(f"Nie znaleziono pliku: {file_path}. Upewnij się, że plik znajduje się w folderze z kodem.")
+except Exception as e:
+    st.error(f"Nieoczekiwany błąd: {e}")
