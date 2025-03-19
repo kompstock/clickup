@@ -76,7 +76,7 @@ try:
             index=(["Wszystkie"] + unique_lists).index(default_list) if default_list in (["Wszystkie"] + unique_lists) else 0
         )
         
-        # Przycisk resetujący filtry – ustawia domyślne query parameters i odświeża aplikację
+        # Przycisk resetujący filtry – ustawia domyślne query parameters i próbuje odświeżyć aplikację
         if st.sidebar.button("Resetuj filtry"):
             reset_params = {
                 "tag": ["Wszystkie"],
@@ -87,7 +87,10 @@ try:
                 "list": ["Wszystkie"]
             }
             st.experimental_set_query_params(**reset_params)
-            st.experimental_rerun()
+            if hasattr(st, "experimental_rerun"):
+                st.experimental_rerun()
+            else:
+                st.warning("Funkcja experimental_rerun() jest niedostępna. Odśwież stronę ręcznie, aby zastosować reset filtrów.")
         
         # Przygotowanie nowych parametrów query
         new_query_params = {
