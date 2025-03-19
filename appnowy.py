@@ -92,7 +92,7 @@ try:
         }
         
         # Dodajemy przycisk, który zapisze filtry i wyświetli informację z aktualnym URL
-        if st.sidebar.button("Zapisz filtry"):
+        if st.sidebar.button("Zapisz filtry i udostępnij"):
             st.experimental_set_query_params(**new_query_params)
             # Skonstruuj query string, aby wyświetlić użytkownikowi pełny URL
             query_string = urllib.parse.urlencode(new_query_params, doseq=True)
