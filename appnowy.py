@@ -81,6 +81,19 @@ try:
             index=(["Wszystkie"] + unique_lists).index(default_list) if default_list in (["Wszystkie"] + unique_lists) else 0
         )
         
+        # Przycisk resetujący filtry – ustawia domyślne wartości i przerysowuje aplikację
+        if st.sidebar.button("Resetuj filtry"):
+            reset_params = {
+                "tag": ["Wszystkie"],
+                "processor": ["Wszystkie"],
+                "processor_model": ["Wszystkie"],
+                "resolution": ["Wszystkie"],
+                "destinations": [],
+                "list": ["Wszystkie"]
+            }
+            st.experimental_set_query_params(**reset_params)
+            st.experimental_rerun()
+        
         # Przygotowanie nowych parametrów query
         new_query_params = {
             "tag": [selected_tag],
@@ -91,10 +104,9 @@ try:
             "list": [selected_list]
         }
         
-        # Dodajemy przycisk, który zapisze filtry i wyświetli informację z aktualnym URL
-        if st.sidebar.button("Zapisz filtry"):
+        # Przycisk, który zapisze filtry i wyświetli informację z aktualnym URL
+        if st.sidebar.button("Zapisz i udostępnij filtry"):
             st.experimental_set_query_params(**new_query_params)
-            # Skonstruuj query string, aby wyświetlić użytkownikowi pełny URL
             query_string = urllib.parse.urlencode(new_query_params, doseq=True)
             base_url = st.request.host_url if hasattr(st, "request") and st.request.host_url else ""
             full_url = base_url + "?" + query_string if base_url else "URL został zaktualizowany - skopiuj adres z paska przeglądarki."
