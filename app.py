@@ -3,7 +3,7 @@ import streamlit as st
 import urllib.parse
 
 st.set_page_config(layout="wide")
-st.title("Magazyn z ClickUp - aktualizacja 11.00.2025 - wersja BETA")
+st.title("Magazyn z ClickUp - aktualizacja 11.04.2025 - wersja BETA")
 
 file_path = "nazwa_pliku.csv"
 separator = ','
