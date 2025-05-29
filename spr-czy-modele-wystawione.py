@@ -177,4 +177,3 @@ try:
         models_summary.columns = ["Tag", "Procesor", "Model Procesora", "Liczba"]
 
         st.dataframe(models_summary, height=500)
-        # ------ KONIEC NOWEJ SEKCJI ------
