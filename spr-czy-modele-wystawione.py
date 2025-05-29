@@ -153,19 +153,28 @@ try:
                 file_name="filtered_data.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
-        
-     st.write("### Pogrupowane modele – tagi + procesor + model (malejąco)")
+                    # … po eksporcie do Excela i przycisku download …
 
-# Jeśli masz Pandas ≥1.1.0, możesz użyć value_counts:
-models_summary = (
-    df
-    .value_counts(["tags", "Procesor (drop down)", "Model Procesora (short text)"])
-    .reset_index(name="Liczba")
-    .sort_values("Liczba", ascending=False)
-    .reset_index(drop=True)
-)
+        with open("filtered_data.xlsx", "rb") as f:
+            st.download_button(
+                label="Pobierz dane jako Excel",
+                data=f,
+                file_name="filtered_data.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
 
-# Dla czytelności przemianujmy kolumny
-models_summary.columns = ["Tag", "Procesor", "Model Procesora", "Liczba"]
+        # ------ TU ZACZYNA SIĘ NOWA SEKCJA z 8 SPACJAMI WCIĘCIA ------
+        st.write("### Pogrupowane modele – tagi + procesor + model (malejąco)")
 
-st.dataframe(models_summary, height=500)
+        # Grupujemy po trzech kolumnach i sortujemy malejąco
+        models_summary = (
+            df
+            .value_counts(["tags", "Procesor (drop down)", "Model Procesora (short text)"])
+            .reset_index(name="Liczba")
+            .sort_values("Liczba", ascending=False)
+            .reset_index(drop=True)
+        )
+        models_summary.columns = ["Tag", "Procesor", "Model Procesora", "Liczba"]
+
+        st.dataframe(models_summary, height=500)
+        # ------ KONIEC NOWEJ SEKCJI ------
