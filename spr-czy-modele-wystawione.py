@@ -154,34 +154,18 @@ try:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
         
-        st.write("### Pogrupowane modele - całość")
-        with st.expander("Pokaż/ukryj tabelę z tagami", expanded=False):
-            tags_summary = df["tags"].value_counts().reset_index()
-            tags_summary.columns = ["Tag", "Liczba egzemplarzy"]
-            st.dataframe(tags_summary, height=500)
+     st.write("### Pogrupowane modele – tagi + procesor + model (malejąco)")
 
-except pd.errors.ParserError as e:
-    st.error(f"Błąd parsowania pliku CSV: {e}")
-except UnicodeDecodeError as e:
-    st.error(f"Błąd kodowania: {e}")
-except KeyError as e:
-    st.error(f"Brak wymaganej kolumny w pliku CSV: {e}")
-except FileNotFoundError:
-    st.error(f"Nie znaleziono pliku: {file_path}. Upewnij się, że plik znajduje się w folderze z kodem.")
-except Exception as e:
-    st.error(f"Nieoczekiwany błąd: {e}")
-# … (Twój dotychczasowy kod)
-        
-st.write("### Pogrupowane modele – procesor + model (malejąco)")
-
-# Grupujemy po procesorze i modelu, liczymy wystąpienia i sortujemy malejąco
+# Jeśli masz Pandas ≥1.1.0, możesz użyć value_counts:
 models_summary = (
     df
-    .value_counts(["Procesor (drop down)", "Model Procesora (short text)"])
+    .value_counts(["tags", "Procesor (drop down)", "Model Procesora (short text)"])
     .reset_index(name="Liczba")
     .sort_values("Liczba", ascending=False)
     .reset_index(drop=True)
 )
 
-st.dataframe(models_summary, height=500)
+# Dla czytelności przemianujmy kolumny
+models_summary.columns = ["Tag", "Procesor", "Model Procesora", "Liczba"]
 
+st.dataframe(models_summary, height=500)
