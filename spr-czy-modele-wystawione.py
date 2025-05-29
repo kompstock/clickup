@@ -170,18 +170,3 @@ except FileNotFoundError:
     st.error(f"Nie znaleziono pliku: {file_path}. Upewnij się, że plik znajduje się w folderze z kodem.")
 except Exception as e:
     st.error(f"Nieoczekiwany błąd: {e}")
-
-# … (Twój dotychczasowy kod)
-        
-st.write("### Pogrupowane modele – procesor + model (malejąco)")
-
-# Grupujemy po procesorze i modelu, liczymy wystąpienia i sortujemy malejąco
-models_summary = (
-    df
-    .value_counts(["Procesor (drop down)", "Model Procesora (short text)"])
-    .reset_index(name="Liczba")
-    .sort_values("Liczba", ascending=False)
-    .reset_index(drop=True)
-)
-
-st.dataframe(models_summary, height=500)
