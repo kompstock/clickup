@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 
 # --- USTAWIENIA ---
-FILE_PATH = "magazyn_clickup.csv"  # <-- TU WPISZ NAZWĘ SWOJEGO PLIKU
+FILE_PATH = "nazwa_pliku.csv"  # <-- 
 SEPARATOR = ","                    # jeśli trzeba, zmień na ";"
 
 st.set_page_config(page_title="Zestawienie konfiguracji magazynu", layout="wide")
