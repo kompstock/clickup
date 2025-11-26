@@ -71,7 +71,7 @@ use_gpu = st.sidebar.checkbox("Uwzględnij **Grafikę (I)**", value=True)
 
 # --- FILTR MINIMALNEJ LICZBY SZTUK ---
 min_qty = st.sidebar.number_input(
-    "Pokaż konfiguracje z co najmniej X sztukami",
+    "Pokaż konfiguracje z co najmniej X sztukami - ostatnia tabela",
     min_value=1,
     max_value=100,
     value=1,
