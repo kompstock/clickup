@@ -28,8 +28,8 @@ except Exception as e:
 
 st.success(f"Plik `{FILE_PATH}` został wczytany poprawnie.")
 
-st.subheader("Podgląd danych (pierwsze 50 wierszy)")
-st.dataframe(df.head(50), use_container_width=True)
+st.subheader("Podgląd danych (wszystkie wiersze)")
+st.dataframe(df, use_container_width=True)
 
 # === SPRAWDZAMY KOLUMNY ===
 required_cols = [
@@ -53,24 +53,53 @@ df["Model Procesora (short text)"] = (
     .str.strip()
 )
 
+# === WYCIĄGAMY PRODUCENTA / MODEL GŁÓWNY Z TAGS (PIERWSZE SŁOWO) ===
+df["Model_Glowny"] = (
+    df["tags"]
+    .astype(str)
+    .str.split()
+    .str[0]
+    .str.strip()
+)
+
 # === SIDEBAR – USTAWIENIA GRUPOWANIA ===
 st.sidebar.header("🔧 Ustawienia grupowania")
 
 use_cpu_model = st.sidebar.checkbox("Uwzględnij **Model procesora (H)**", value=True)
 use_gpu = st.sidebar.checkbox("Uwzględnij **Grafikę (I)**", value=True)
 
+# --- FILTR PRODUCENTA (PIERWSZE SŁOWO Z TAGS) ---
+st.sidebar.subheader("🏭 Filtr producenta (pierwsze słowo z tags)")
+all_main_models = sorted(df["Model_Glowny"].dropna().unique().tolist())
+selected_main_model = st.sidebar.selectbox(
+    "Wybierz producenta (puste = wszyscy)",
+    ["Wszystkie"] + all_main_models
+)
+
+# --- FILTR MODELI (PEŁNE TAGS) ---
 st.sidebar.subheader("🎯 Filtr modeli (tags)")
-all_models = sorted(df["tags"].dropna().unique().tolist())
+df_for_tags = df.copy()
+if selected_main_model != "Wszystkie":
+    df_for_tags = df_for_tags[df_for_tags["Model_Glowny"] == selected_main_model]
+
+all_models = sorted(df_for_tags["tags"].dropna().unique().tolist())
 selected_models = st.sidebar.multiselect(
     "Wybierz modele (puste = wszystkie)",
     options=all_models,
 )
 
-# === FILTROWANIE PO MODELACH ===
+# === FILTROWANIE PO PRODUCENCIE I MODELACH ===
+df_filtered = df.copy()
+
+if selected_main_model != "Wszystkie":
+    df_filtered = df_filtered[df_filtered["Model_Glowny"] == selected_main_model]
+
 if selected_models:
-    df_filtered = df[df["tags"].isin(selected_models)].copy()
-else:
-    df_filtered = df.copy()
+    df_filtered = df_filtered[df_filtered["tags"].isin(selected_models)]
+
+st.subheader("📋 Dane po filtrach (producent + tags)")
+st.write(f"Liczba wierszy po filtrach: **{len(df_filtered)}**")
+st.dataframe(df_filtered, use_container_width=True)
 
 # === DOTYK / BRAK DOTYKU Z MATRYCY ===
 mat = df_filtered["Matryca (labels)"].astype(str)
@@ -102,7 +131,7 @@ sort_cols = [c for c in ["tags", "Procesor (drop down)", "Dotyk_flag"] if c in g
 grouped = grouped.sort_values(by=sort_cols)
 
 # === WYNIK ===
-st.subheader("📊 Zestawienie konfiguracji")
+st.subheader("📊 Zestawienie konfiguracji (pełna tabela)")
 st.write(f"Liczba różnych konfiguracji: **{len(grouped)}**")
 
 st.dataframe(grouped, use_container_width=True)
