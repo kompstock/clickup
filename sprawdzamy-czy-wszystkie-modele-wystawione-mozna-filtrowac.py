@@ -28,6 +28,7 @@ except Exception as e:
 
 st.success(f"Plik `{FILE_PATH}` został wczytany poprawnie.")
 
+# === PODGLĄD GÓRNEJ TABELI – OGRANICZONY DO 100 ===
 st.subheader("Podgląd danych (pierwsze 100 wierszy)")
 st.dataframe(df.head(100), use_container_width=True)
 
@@ -45,7 +46,7 @@ if missing:
     st.error("Brakuje wymaganych kolumn w pliku CSV:\n" + ", ".join(missing))
     st.stop()
 
-# Normalizacja modelu procesora dla spójności (lower/strip)
+# Normalizacja modelu procesora dla spójności
 df["Model Procesora (short text)"] = (
     df["Model Procesora (short text)"]
     .astype(str)
@@ -67,6 +68,15 @@ st.sidebar.header("🔧 Ustawienia grupowania")
 
 use_cpu_model = st.sidebar.checkbox("Uwzględnij **Model procesora (H)**", value=True)
 use_gpu = st.sidebar.checkbox("Uwzględnij **Grafikę (I)**", value=True)
+
+# --- FILTR MINIMALNEJ LICZBY SZTUK ---
+min_qty = st.sidebar.number_input(
+    "Pokaż konfiguracje z co najmniej X sztukami",
+    min_value=1,
+    max_value=100,
+    value=1,
+    step=1
+)
 
 # --- FILTR PRODUCENTA (PIERWSZE SŁOWO Z TAGS) ---
 st.sidebar.subheader("🏭 Filtr producenta (pierwsze słowo z tags)")
@@ -99,7 +109,7 @@ if selected_models:
 
 st.subheader("📋 Dane po filtrach (producent + tags)")
 st.write(f"Liczba wierszy po filtrach: **{len(df_filtered)}**")
-st.dataframe(df_filtered, use_container_width=True)
+st.dataframe(df_filtered, use_container_width=True)  # pełna tabela
 
 # === DOTYK / BRAK DOTYKU Z MATRYCY ===
 mat = df_filtered["Matryca (labels)"].astype(str)
@@ -130,11 +140,14 @@ grouped = (
 sort_cols = [c for c in ["tags", "Procesor (drop down)", "Dotyk_flag"] if c in grouped.columns]
 grouped = grouped.sort_values(by=sort_cols)
 
-# === WYNIK ===
+# --- FILTR PO MINIMALNEJ LICZBIE SZTUK ---
+grouped = grouped[grouped["Ilość sztuk"] >= min_qty]
+
+# === WYNIK — PEŁNA TABELA ===
 st.subheader("📊 Zestawienie konfiguracji (pełna tabela)")
 st.write(f"Liczba różnych konfiguracji: **{len(grouped)}**")
 
-st.dataframe(grouped, use_container_width=True)
+st.dataframe(grouped, use_container_width=True)  # pełna tabela
 
 # === EXPORT DO EXCEL ===
 buffer = io.BytesIO()
