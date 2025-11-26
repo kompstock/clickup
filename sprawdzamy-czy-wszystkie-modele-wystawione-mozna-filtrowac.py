@@ -28,8 +28,8 @@ except Exception as e:
 
 st.success(f"Plik `{FILE_PATH}` został wczytany poprawnie.")
 
-st.subheader("Podgląd danych (wszystkie wiersze)")
-st.dataframe(df, use_container_width=True)
+st.subheader("Podgląd danych (pierwsze 100 wierszy)")
+st.dataframe(df.head(100), use_container_width=True)
 
 # === SPRAWDZAMY KOLUMNY ===
 required_cols = [
