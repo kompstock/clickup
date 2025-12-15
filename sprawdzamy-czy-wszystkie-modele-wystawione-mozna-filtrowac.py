@@ -66,6 +66,10 @@ df["Model_Glowny"] = (
 # === SIDEBAR – USTAWIENIA GRUPOWANIA ===
 st.sidebar.header("🔧 Ustawienia grupowania")
 
+if st.sidebar.button("🔄 Odśwież dane"):
+    load_data.clear()
+    st.rerun()
+    
 use_cpu_model = st.sidebar.checkbox("Uwzględnij **Model procesora (H)**", value=True)
 use_gpu = st.sidebar.checkbox("Uwzględnij **Grafikę (I)**", value=True)
 
