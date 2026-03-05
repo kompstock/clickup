@@ -7,7 +7,7 @@ FILE_PATH = "nazwa_pliku.csv"   # tu wpisz dokładną nazwę pliku z repo
 SEPARATOR = ","                 # jeśli CSV ma ; to zmień na ";"
 
 st.set_page_config(layout="wide")
-st.title("📦 19.02 Sprawdzamy, czy wszystkie modele są wystawione (z możliwością filtrowania konfiguracji)")
+st.title("📦 05.03.2026 Sprawdzamy, czy wszystkie modele są wystawione (z możliwością filtrowania konfiguracji)")
 
 st.caption("Dane z ClickUp – grupowanie po modelu, procesorze, grafice i dotyku.")
 
